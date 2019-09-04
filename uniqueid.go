@@ -6,6 +6,22 @@ import (
 	"sync"
 )
 
+//DefaultGenerator default generator
+var DefaultGenerator *Generator
+
+//GenerateID generate unique id.
+//Return  generated id and any error if rasied.
+func GenerateID() (string, error) {
+	return DefaultGenerator.GenerateID()
+}
+
+//MustGenerateID generate unique id.
+//Return  generated id.
+//Panic if any error raised
+func MustGenerateID() string {
+	return DefaultGenerator.MustGenerateID()
+}
+
 //Generator unique id generator
 type Generator struct {
 	Driver Driver
@@ -55,7 +71,7 @@ func Register(name string, f Factory) {
 	factorysMu.Lock()
 	defer factorysMu.Unlock()
 	if f == nil {
-		panic("unique: Register cache factory is nil")
+		panic("unique: Register uniqueid factory is nil")
 	}
 	if _, dup := factories[name]; dup {
 		panic("unique: Register called twice for factory " + name)

@@ -1,7 +1,7 @@
 package snowflake
 
 import (
-	"github.com/jarlyyn/herb-go-experimental/uniqueid"
+	"github.com/herb-go/uniqueid"
 
 	"testing"
 )

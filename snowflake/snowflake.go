@@ -2,7 +2,7 @@ package snowflake
 
 import (
 	"github.com/bwmarrin/snowflake"
-	"github.com/jarlyyn/herb-go-experimental/uniqueid"
+	"github.com/herb-go/uniqueid"
 )
 
 //SnowFlake snow flake driver

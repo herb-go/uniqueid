@@ -1,7 +1,7 @@
 package uuid
 
 import (
-	"github.com/jarlyyn/herb-go-experimental/uniqueid"
+	"github.com/herb-go/uniqueid"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -13,6 +13,16 @@ type UUID struct {
 //NewUUID create new uuid driver
 func NewUUID() *UUID {
 	return &UUID{}
+}
+
+//V1 generate unique id by uuid version1.
+//Return  generated id and any error if rasied.
+func V1() (string, error) {
+	uid, err := uuid.NewV1()
+	if err != nil {
+		return "", err
+	}
+	return uid.String(), nil
 }
 
 //GenerateID generate unique id.
@@ -39,6 +49,7 @@ func Factory(conf uniqueid.Config, prefix string) (uniqueid.Driver, error) {
 	return i, nil
 
 }
+
 func init() {
 	uniqueid.Register("uuid", Factory)
 }

@@ -9,29 +9,6 @@ type Option interface {
 	ApplyTo(*Generator) error
 }
 
-// OptionConfigJSON option config in json format.
-type OptionConfigJSON struct {
-	Driver string
-	Config ConfigJSON
-}
-
-//NewOptionConfigJSON create new option config.
-func NewOptionConfigJSON() *OptionConfigJSON {
-	return &OptionConfigJSON{
-		Config: map[string]string{},
-	}
-}
-
-//ApplyTo apply option to generator.
-func (o *OptionConfigJSON) ApplyTo(g *Generator) error {
-	driver, err := NewDriver(o.Driver, &o.Config, "")
-	if err != nil {
-		return err
-	}
-	g.Driver = driver
-	return nil
-}
-
 // OptionConfigMap option config in map format.
 type OptionConfigMap struct {
 	Driver string
@@ -60,30 +37,6 @@ type Config interface {
 	//Get get value form given key.
 	//Return any error if raised.
 	Get(key string, v interface{}) error
-}
-
-//ConfigJSON JSON format config
-type ConfigJSON map[string]string
-
-//Get get value form given key.
-//Return any error if raised.
-func (c *ConfigJSON) Get(key string, v interface{}) error {
-	s, ok := (*c)[key]
-	if !ok {
-		return nil
-	}
-	return json.Unmarshal([]byte(s), v)
-}
-
-//Set set value to given key.
-//Return any error if raised.
-func (c *ConfigJSON) Set(key string, v interface{}) error {
-	s, err := json.Marshal(v)
-	if err != nil {
-		return nil
-	}
-	(*c)[key] = string(s)
-	return nil
 }
 
 //ConfigMap Map  format config

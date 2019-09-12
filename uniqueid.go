@@ -1,6 +1,7 @@
 package uniqueid
 
 import (
+	"errors"
 	"fmt"
 	"sort"
 	"sync"
@@ -71,10 +72,10 @@ func Register(name string, f Factory) {
 	factorysMu.Lock()
 	defer factorysMu.Unlock()
 	if f == nil {
-		panic("unique: Register uniqueid factory is nil")
+		panic(errors.New("unique: Register uniqueid factory is nil"))
 	}
 	if _, dup := factories[name]; dup {
-		panic("unique: Register called twice for factory " + name)
+		panic(errors.New("unique: Register called twice for factory " + name))
 	}
 	factories[name] = f
 }

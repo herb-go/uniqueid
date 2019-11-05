@@ -47,8 +47,8 @@ func SimpleIDFactory(conf Config, prefix string) (Driver, error) {
 	i := NewSimpleID()
 	conf.Get(prefix+"Suff", &i.Suff)
 	return i, nil
-
 }
+
 func init() {
 	Register("simpleid", SimpleIDFactory)
 }

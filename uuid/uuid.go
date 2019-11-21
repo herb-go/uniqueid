@@ -36,10 +36,10 @@ func (u *UUID) GenerateID() (string, error) {
 }
 
 //Factory uuid driver factory
-func Factory(conf uniqueid.Config, prefix string) (uniqueid.Driver, error) {
+func Factory(conf map[string]interface{}, prefix string) (uniqueid.Driver, error) {
 	i := NewUUID()
 	var version int
-	conf.Get(prefix+"Version", &version)
+	uniqueid.LoadConfig(conf, prefix+"Version", &version)
 	switch version {
 	case 4:
 		i.creator = uuid.NewV4

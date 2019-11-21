@@ -6,7 +6,7 @@ func newSimpleIDGenerator() *Generator {
 	g := NewGenerator()
 	o := NewOptionConfigMap()
 	o.Driver = "simpleid"
-	o.Config.Set("Suff", "-test")
+	o.Config["Suff"] = "-test"
 	err := o.ApplyTo(g)
 	if err != nil {
 		panic(err)

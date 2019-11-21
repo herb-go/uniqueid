@@ -43,9 +43,12 @@ func NewSimpleID() *SimpleID {
 }
 
 //SimpleIDFactory simple id driver factory
-func SimpleIDFactory(conf Config, prefix string) (Driver, error) {
+func SimpleIDFactory(conf map[string]interface{}, prefix string) (Driver, error) {
 	i := NewSimpleID()
-	conf.Get(prefix+"Suff", &i.Suff)
+	err := LoadConfig(conf, prefix+"Suff", &i.Suff)
+	if err != nil {
+		return nil, err
+	}
 	return i, nil
 }
 

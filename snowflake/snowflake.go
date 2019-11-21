@@ -22,11 +22,11 @@ func (s *SnowFlake) GenerateID() (string, error) {
 }
 
 //Factory snow flake driver factory
-func Factory(conf uniqueid.Config, prefix string) (uniqueid.Driver, error) {
+func Factory(conf map[string]interface{}, prefix string) (uniqueid.Driver, error) {
 	var err error
 	s := NewSnowFlake()
 	var node int64
-	conf.Get(prefix+"Node", &node)
+	uniqueid.LoadConfig(conf, prefix+"Node", &node)
 	s.node, err = snowflake.NewNode(node)
 	if err != nil {
 		return nil, err

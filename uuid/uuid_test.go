@@ -20,7 +20,7 @@ func newUUIDGenerator() *uniqueid.Generator {
 func newUUIDGeneratorV4() *uniqueid.Generator {
 	g := uniqueid.NewGenerator()
 	o := uniqueid.NewOptionConfigMap()
-	o.Config.Set("Version", 4)
+	o.Config["Version"] = 4
 	o.Driver = "uuid"
 	err := o.ApplyTo(g)
 	if err != nil {

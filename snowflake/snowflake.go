@@ -21,13 +21,20 @@ func (s *SnowFlake) GenerateID() (string, error) {
 	return s.node.Generate().String(), nil
 }
 
+type SnowFlakeConfig struct {
+	Node int64
+}
+
 //Factory snow flake driver factory
-func Factory(conf map[string]interface{}, prefix string) (uniqueid.Driver, error) {
+func Factory(loader func(v interface{}) error) (uniqueid.Driver, error) {
 	var err error
 	s := NewSnowFlake()
-	var node int64
-	uniqueid.LoadConfig(conf, prefix+"Node", &node)
-	s.node, err = snowflake.NewNode(node)
+	conf := &SnowFlakeConfig{}
+	err = loader(conf)
+	if err != nil {
+		return nil, err
+	}
+	s.node, err = snowflake.NewNode(conf.Node)
 	if err != nil {
 		return nil, err
 	}

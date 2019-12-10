@@ -58,7 +58,7 @@ type Driver interface {
 }
 
 // Factory unique id generator driver create factory.
-type Factory func(conf map[string]interface{}, prefix string) (Driver, error)
+type Factory func(loader func(v interface{}) error) (Driver, error)
 
 var (
 	factorysMu sync.RWMutex
@@ -102,12 +102,12 @@ func Factories() []string {
 
 //NewDriver create new driver with given name,config and prefix.
 //Reutrn driver created and any error if raised.
-func NewDriver(name string, conf map[string]interface{}, prefix string) (Driver, error) {
+func NewDriver(name string, loader func(v interface{}) error) (Driver, error) {
 	factorysMu.RLock()
 	factoryi, ok := factories[name]
 	factorysMu.RUnlock()
 	if !ok {
 		return nil, fmt.Errorf("uniqueid: unknown driver %q (forgotten import?)", name)
 	}
-	return factoryi(conf, prefix)
+	return factoryi(loader)
 }

@@ -1,6 +1,9 @@
 package snowflake
 
 import (
+	"bytes"
+	"encoding/json"
+
 	"github.com/herb-go/uniqueid"
 
 	"testing"
@@ -8,9 +11,17 @@ import (
 
 func newSnowFlakeGenerator() *uniqueid.Generator {
 	g := uniqueid.NewGenerator()
-	o := uniqueid.NewOptionConfigMap()
+	o := uniqueid.NewOptionConfig()
+	buf := bytes.NewBuffer(nil)
+	encoder := json.NewEncoder(buf)
+	decoder := json.NewDecoder(buf)
+	err := encoder.Encode(SnowFlakeConfig{})
+	if err != nil {
+		panic(err)
+	}
 	o.Driver = "snowflake"
-	err := o.ApplyTo(g)
+	o.Config = decoder.Decode
+	err = o.ApplyTo(g)
 	if err != nil {
 		panic(err)
 	}

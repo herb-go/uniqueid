@@ -1,13 +1,27 @@
 package uniqueid
 
-import "testing"
+import (
+	"bytes"
+	"encoding/json"
+	"testing"
+)
 
 func newSimpleIDGenerator() *Generator {
 	g := NewGenerator()
-	o := NewOptionConfigMap()
+	o := NewOptionConfig()
+	conf := SimpleIDConfig{
+		Suff: "-test",
+	}
+	buf := bytes.NewBuffer(nil)
+	encoder := json.NewEncoder(buf)
+	decoder := json.NewDecoder(buf)
+	err := encoder.Encode(conf)
+	if err != nil {
+		panic(err)
+	}
+	o.Config = decoder.Decode
 	o.Driver = "simpleid"
-	o.Config["Suff"] = "-test"
-	err := o.ApplyTo(g)
+	err = o.ApplyTo(g)
 	if err != nil {
 		panic(err)
 	}

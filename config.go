@@ -9,15 +9,15 @@ type Option interface {
 	ApplyTo(*Generator) error
 }
 
-// OptionConfigMap option config in map format.
-type OptionConfigMap struct {
+// OptionConfig option config in map format.
+type OptionConfig struct {
 	Driver string
-	Config map[string]interface{}
+	Config func(v interface{}) error `config:", lazyload"`
 }
 
 //ApplyTo apply option to file store.
-func (o *OptionConfigMap) ApplyTo(g *Generator) error {
-	driver, err := NewDriver(o.Driver, o.Config, "")
+func (o *OptionConfig) ApplyTo(g *Generator) error {
+	driver, err := NewDriver(o.Driver, o.Config)
 	if err != nil {
 		return err
 	}
@@ -25,11 +25,9 @@ func (o *OptionConfigMap) ApplyTo(g *Generator) error {
 	return nil
 }
 
-//NewOptionConfigMap create new option config.
-func NewOptionConfigMap() *OptionConfigMap {
-	return &OptionConfigMap{
-		Config: map[string]interface{}{},
-	}
+//NewOptionConfig create new option config.
+func NewOptionConfig() *OptionConfig {
+	return &OptionConfig{}
 }
 
 var LoadConfig = func(c map[string]interface{}, key string, v interface{}) error {

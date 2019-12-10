@@ -1,6 +1,9 @@
 package uuid
 
 import (
+	"bytes"
+	"encoding/json"
+
 	"github.com/herb-go/uniqueid"
 
 	"testing"
@@ -8,9 +11,18 @@ import (
 
 func newUUIDGenerator() *uniqueid.Generator {
 	g := uniqueid.NewGenerator()
-	o := uniqueid.NewOptionConfigMap()
+	o := uniqueid.NewOptionConfig()
+	buf := bytes.NewBuffer(nil)
+	encoder := json.NewEncoder(buf)
+	decoder := json.NewDecoder(buf)
+	err := encoder.Encode(UUIDConfig{})
+	if err != nil {
+		panic(err)
+	}
+
 	o.Driver = "uuid"
-	err := o.ApplyTo(g)
+	o.Config = decoder.Decode
+	err = o.ApplyTo(g)
 	if err != nil {
 		panic(err)
 	}
@@ -18,11 +30,21 @@ func newUUIDGenerator() *uniqueid.Generator {
 }
 
 func newUUIDGeneratorV4() *uniqueid.Generator {
+	buf := bytes.NewBuffer(nil)
+	encoder := json.NewEncoder(buf)
+	decoder := json.NewDecoder(buf)
+	err := encoder.Encode(UUIDConfig{
+		Version: 4,
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	g := uniqueid.NewGenerator()
-	o := uniqueid.NewOptionConfigMap()
-	o.Config["Version"] = 4
+	o := uniqueid.NewOptionConfig()
+	o.Config = decoder.Decode
 	o.Driver = "uuid"
-	err := o.ApplyTo(g)
+	err = o.ApplyTo(g)
 	if err != nil {
 		panic(err)
 	}

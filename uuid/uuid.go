@@ -35,12 +35,20 @@ func (u *UUID) GenerateID() (string, error) {
 	return uid.String(), nil
 }
 
+type UUIDConfig struct {
+	Version int
+}
+
 //Factory uuid driver factory
-func Factory(conf map[string]interface{}, prefix string) (uniqueid.Driver, error) {
+func Factory(loader func(v interface{}) error) (uniqueid.Driver, error) {
 	i := NewUUID()
-	var version int
-	uniqueid.LoadConfig(conf, prefix+"Version", &version)
-	switch version {
+	conf := &UUIDConfig{}
+
+	err := loader(conf)
+	if err != nil {
+		return nil, err
+	}
+	switch conf.Version {
 	case 4:
 		i.creator = uuid.NewV4
 	default:

@@ -42,13 +42,19 @@ func NewSimpleID() *SimpleID {
 	}
 }
 
+type SimpleIDConfig struct {
+	Suff string
+}
+
 //SimpleIDFactory simple id driver factory
-func SimpleIDFactory(conf map[string]interface{}, prefix string) (Driver, error) {
+func SimpleIDFactory(loader func(v interface{}) error) (Driver, error) {
 	i := NewSimpleID()
-	err := LoadConfig(conf, prefix+"Suff", &i.Suff)
+	conf := SimpleIDConfig{}
+	err := loader(&conf)
 	if err != nil {
 		return nil, err
 	}
+	i.Suff = conf.Suff
 	return i, nil
 }
 

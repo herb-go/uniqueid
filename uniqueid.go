@@ -100,7 +100,7 @@ func Factories() []string {
 	return list
 }
 
-//NewDriver create new driver with given name,config and prefix.
+//NewDriver create new driver with given name loader.
 //Reutrn driver created and any error if raised.
 func NewDriver(name string, loader func(v interface{}) error) (Driver, error) {
 	factorysMu.RLock()

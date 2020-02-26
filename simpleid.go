@@ -24,6 +24,7 @@ func (i *SimpleID) GenerateID() (string, error) {
 	if err != nil {
 		return "", err
 	}
+	buf.WriteByte('-')
 	c := atomic.AddUint32(i.Current, 1)
 	err = binary.Write(buf, binary.BigEndian, c)
 	if err != nil {

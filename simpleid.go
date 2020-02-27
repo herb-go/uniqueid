@@ -18,19 +18,19 @@ type SimpleID struct {
 //GenerateID generate unique id.
 //Return  generated id and any error if rasied.
 func (i *SimpleID) GenerateID() (string, error) {
-	buf := bytes.NewBuffer(nil)
+	buf1 := bytes.NewBuffer(nil)
+	buf2 := bytes.NewBuffer(nil)
 	ts := time.Now().UnixNano()
-	err := binary.Write(buf, binary.BigEndian, ts)
+	err := binary.Write(buf1, binary.BigEndian, ts)
 	if err != nil {
 		return "", err
 	}
-	buf.WriteByte('-')
 	c := atomic.AddUint32(i.Current, 1)
-	err = binary.Write(buf, binary.BigEndian, c)
+	err = binary.Write(buf2, binary.BigEndian, c)
 	if err != nil {
 		return "", err
 	}
-	return hex.EncodeToString(buf.Bytes()) + i.Suff, nil
+	return hex.EncodeToString(buf1.Bytes()) + "-" + hex.EncodeToString(buf2.Bytes()) + i.Suff, nil
 }
 
 // NewSimpleID create new simpleid driver

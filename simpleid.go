@@ -1,28 +1,18 @@
 package uniqueid
 
 import (
-	"bytes"
-	"encoding/binary"
-	"encoding/hex"
 	"math/rand"
+	"strconv"
 	"sync/atomic"
 	"time"
 )
 
-func encodeTimestamp(ts int64) (string, error) {
-	buf := bytes.NewBuffer(nil)
-	err := binary.Write(buf, binary.BigEndian, ts)
-	if err != nil {
-		return "", err
-	}
-
-	hexstr := hex.EncodeToString(buf.Bytes())
-	lengthbuf := bytes.NewBuffer(nil)
-	err = binary.Write(buf, binary.BigEndian, len(hexstr))
-	if err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(lengthbuf.Bytes()) + hexstr, nil
+func encodeu32(data uint32) string {
+	return encode64(int64(data))
+}
+func encode64(data int64) string {
+	hexstr := strconv.FormatInt(data, 32)
+	return strconv.FormatInt(int64(len(hexstr)), 32) + hexstr
 }
 
 //SimpleID simple id driver
@@ -34,17 +24,9 @@ type SimpleID struct {
 //GenerateID generate unique id.
 //Return  generated id and any error if rasied.
 func (i *SimpleID) GenerateID() (string, error) {
-	buf2 := bytes.NewBuffer(nil)
-	ts, err := encodeTimestamp(time.Now().UnixNano())
-	if err != nil {
-		return "", err
-	}
-	c := atomic.AddUint32(i.Current, 1)
-	err = binary.Write(buf2, binary.BigEndian, c)
-	if err != nil {
-		return "", err
-	}
-	return ts + hex.EncodeToString(buf2.Bytes()) + i.Suff, nil
+	ts := encode64(time.Now().UnixNano())
+	current := encodeu32(atomic.AddUint32(i.Current, 1))
+	return ts + current + i.Suff, nil
 }
 
 // NewSimpleID create new simpleid driver
@@ -69,7 +51,7 @@ func SimpleIDFactory(loader func(v interface{}) error) (Driver, error) {
 	if err != nil {
 		return nil, err
 	}
-	if len(conf.Suff) > 7 {
+	if len(conf.Suff) > 6 {
 		return nil, ErrSuffTooLong
 	}
 	i.Suff = conf.Suff

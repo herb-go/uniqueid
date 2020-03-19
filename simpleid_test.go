@@ -3,6 +3,7 @@ package uniqueid
 import (
 	"bytes"
 	"encoding/json"
+	"strconv"
 	"testing"
 )
 
@@ -10,7 +11,7 @@ func TestTooLong(t *testing.T) {
 	g := NewGenerator()
 	o := NewOptionConfig()
 	conf := SimpleIDConfig{
-		Suff: "12345678",
+		Suff: "1234567",
 	}
 	buf := bytes.NewBuffer(nil)
 	encoder := json.NewEncoder(buf)
@@ -49,15 +50,15 @@ func newSimpleIDGenerator() *Generator {
 }
 
 func TestEncode(t *testing.T) {
-	v1, err := encodeTimestamp(0x21)
+	v1, err := strconv.ParseInt("21", 32, 64)
 	if err != nil {
 		panic(err)
 	}
-	v2, err := encodeTimestamp(0x101)
+	v2, err := strconv.ParseInt("101", 32, 64)
 	if err != nil {
 		panic(err)
 	}
-	if !(v1 < v2) {
+	if !(encodeu32(uint32(v1)) < encodeu32(uint32(v2))) {
 		t.Fatal(v1, v2)
 	}
 }

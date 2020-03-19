@@ -9,6 +9,22 @@ import (
 	"time"
 )
 
+func encodeTimestamp(ts int64) (string, error) {
+	buf := bytes.NewBuffer(nil)
+	err := binary.Write(buf, binary.BigEndian, ts)
+	if err != nil {
+		return "", err
+	}
+
+	hexstr := hex.EncodeToString(buf.Bytes())
+	lengthbuf := bytes.NewBuffer(nil)
+	err = binary.Write(buf, binary.BigEndian, len(hexstr))
+	if err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(lengthbuf.Bytes()) + hexstr, nil
+}
+
 //SimpleID simple id driver
 type SimpleID struct {
 	Current *uint32
@@ -18,10 +34,8 @@ type SimpleID struct {
 //GenerateID generate unique id.
 //Return  generated id and any error if rasied.
 func (i *SimpleID) GenerateID() (string, error) {
-	buf1 := bytes.NewBuffer(nil)
 	buf2 := bytes.NewBuffer(nil)
-	ts := time.Now().UnixNano()
-	err := binary.Write(buf1, binary.BigEndian, ts)
+	ts, err := encodeTimestamp(time.Now().UnixNano())
 	if err != nil {
 		return "", err
 	}
@@ -30,7 +44,7 @@ func (i *SimpleID) GenerateID() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return hex.EncodeToString(buf1.Bytes()) + "-" + hex.EncodeToString(buf2.Bytes()) + i.Suff, nil
+	return ts + hex.EncodeToString(buf2.Bytes()) + i.Suff, nil
 }
 
 // NewSimpleID create new simpleid driver
@@ -54,6 +68,9 @@ func SimpleIDFactory(loader func(v interface{}) error) (Driver, error) {
 	err := loader(&conf)
 	if err != nil {
 		return nil, err
+	}
+	if len(conf.Suff) > 7 {
+		return nil, ErrSuffTooLong
 	}
 	i.Suff = conf.Suff
 	return i, nil

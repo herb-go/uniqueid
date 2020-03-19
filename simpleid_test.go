@@ -6,6 +6,26 @@ import (
 	"testing"
 )
 
+func TestTooLong(t *testing.T) {
+	g := NewGenerator()
+	o := NewOptionConfig()
+	conf := SimpleIDConfig{
+		Suff: "12345678",
+	}
+	buf := bytes.NewBuffer(nil)
+	encoder := json.NewEncoder(buf)
+	decoder := json.NewDecoder(buf)
+	err := encoder.Encode(conf)
+	if err != nil {
+		panic(err)
+	}
+	o.Config = decoder.Decode
+	o.Driver = "simpleid"
+	err = o.ApplyTo(g)
+	if err != ErrSuffTooLong {
+		t.Fatal(err)
+	}
+}
 func newSimpleIDGenerator() *Generator {
 	g := NewGenerator()
 	o := NewOptionConfig()
@@ -27,6 +47,21 @@ func newSimpleIDGenerator() *Generator {
 	}
 	return g
 }
+
+func TestEncode(t *testing.T) {
+	v1, err := encodeTimestamp(0x21)
+	if err != nil {
+		panic(err)
+	}
+	v2, err := encodeTimestamp(0x101)
+	if err != nil {
+		panic(err)
+	}
+	if !(v1 < v2) {
+		t.Fatal(v1, v2)
+	}
+}
+
 func TestSimpleID(t *testing.T) {
 	generator := newSimpleIDGenerator()
 	var last = ""

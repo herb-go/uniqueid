@@ -8,7 +8,9 @@ import (
 )
 
 //DefaultGenerator default generator
-var DefaultGenerator *Generator
+var DefaultGenerator = &Generator{
+	Driver: NewSimpleID(),
+}
 
 //GenerateID generate unique id.
 //Return  generated id and any error if rasied.

@@ -32,6 +32,7 @@ func (i *SimpleID) GenerateID() (string, error) {
 // NewSimpleID create new simpleid driver
 func NewSimpleID() *SimpleID {
 	time.Sleep(time.Millisecond)
+	rand.Seed(time.Now().UnixNano())
 	var c = rand.Uint32()
 	return &SimpleID{
 		Current: &c,

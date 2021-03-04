@@ -25,6 +25,13 @@ func MustGenerateID() string {
 	return DefaultGenerator.MustGenerateID()
 }
 
+//TryGenerateID try generate unique id.
+//Return generated id if success
+func TryGenerateID() string {
+	id, _ := DefaultGenerator.GenerateID()
+	return id
+}
+
 //Generator unique id generator
 type Generator struct {
 	Driver Driver
